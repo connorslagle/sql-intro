@@ -1,5 +1,8 @@
-Goals
-======================
+# SQL
+
+## Introduction
+#### Goals
+
    1. Explore the Database
    2. Basic Querying - Selecting From Tables
    3. Selecting specific attributes of a table
@@ -10,10 +13,10 @@ Goals
    8. Subqueries
 
 
-Loading the database
-======================
+## Basic
+### Part 1: Loading the database
 
-In this repo, there's a SQL dump of the data we'll be using today. This data is typical of the type of data you might encounter in industry. It is [normalized](https://en.wikipedia.org/wiki/Database_normalization), which is a way of minimizing the disk space required to store the data, but which can sometimes require more effort to get data, since most queries will require information stored across multiple tables. As an example, the events table has ids for both users and meals, but in order to get the price of the meal, we have to look up that meal in the id table. This allows us to use _only_ the id to refer to the meal _anywhere_ it may appear, but does mean that to get meal details we almost always have to join. *As a data scientist, you will be writing a lot of SQL in order to get data from various tables into a single location where you can use it.*
+In this repo, there's a SQL dump of the data we'll be using today. This data is typical of the type of data you might encounter in industry. It is [normalized](https://en.wikipedia.org/wiki/Database_normalization), which is a way of minimizing the disk space required to store the data and ensuring consistency, but which can sometimes require more effort to get data, since most queries will require information stored across multiple tables. As an example, the events table has ids for both users and meals, but in order to get the price of the meal, we have to look up that meal in the id table. This allows us to use _only_ the id to refer to the meal _anywhere_ it may appear, but does mean that to get meal details we almost always have to join. *As a data scientist, you will be writing a lot of SQL in order to get data from various tables into a single location where you can use it.*
 
 1. If you are on your personal computer and haven't set up postgres yet, follow [these instructions](https://github.com/GalvanizeDataScience/docker/blob/master/guides/docker_postgres.md)
 
@@ -41,8 +44,8 @@ In this repo, there's a SQL dump of the data we'll be using today. This data is 
 
 Now we are in a command line client. This is how we will explore the database to gain an understanding of what data we are playing with.
 
-Basic Exploration
-=================
+### Part 2: Basic Exploration
+
 
 First, we will want to see what the available tables are. Remember, now that we are in the database, all of our commands or actions will be on the `readychef` database.
 
@@ -51,8 +54,7 @@ First, we will want to see what the available tables are. Remember, now that we 
 2. What columns does each table have? Run `\d tablename` to find out.
 
 
-Select statements
-===================
+### Part 3: Select statements
 
 1. To get an understanding of the data, run a [SELECT](http://www.postgresqltutorial.com/postgresql-select/) statement on each table. Keep all the columns and limit the number of rows to 10.
         ```
@@ -67,8 +69,7 @@ Select statements
 
     *Note:*  Pinterest=PI, Facebook=FB, Twitter=TW, and Reddit=RE
 
-Where Clauses / Filtering
-========================================
+### Part 4: Where Clauses / Filtering
 
 Now that we have the lay of the land, we're interested in the subset of users that came from Facebook (FB). If you're unfamiliar with SQL syntax, the [WHERE](http://www.postgresqltutorial.com/postgresql-where/) clause can be used to add a conditional to `SELECT` statements. This has the effect of only returning rows where the conditional evaluates to `TRUE`. 
 
@@ -91,8 +92,7 @@ Now that we have the lay of the land, we're interested in the subset of users th
     ...
     ```
 
-Aggregation Functions
-=======================
+### Part 5: Aggregation Functions
 
 Let's try some [aggregation functions](http://www.postgresql.org/docs/8.2/static/functions-aggregate.html) now.
 
@@ -174,8 +174,9 @@ Your output should look something like:
 10. From the `events` table, write a query that gets the total number of buys, likes and shares for each meal id. 
 _Extra_: To avoid having to do this as three separate queries you can do the count of the number of buys like this: `SUM(CASE WHEN event='bought' THEN 1 ELSE 0 END)`.
 
-Sorting
-==========================================
+## Advanced
+
+### Part 6: Sorting
 
 1. Let's start with a query which gets the average price for each type. It will be helpful to alias the average price column as 'avg_price'.
 
@@ -187,8 +188,7 @@ Sorting
 
 4. For shorthand, people sometimes use numbers to refer to the columns in their order by or group by clauses. The numbers refer to the order they are in the select statement. For instance `SELECT type, dt FROM meals ORDER BY 1;` would order the results by the `type` column.
 
-Joins
-=========================
+### Part 7: Joins
 
 Now we are ready to do operations on multiple tables. A [JOIN](http://www.tutorialspoint.com/postgresql/postgresql_using_joins.htm) allows us to combine multiple tables.
 
@@ -226,11 +226,8 @@ Now we are ready to do operations on multiple tables. A [JOIN](http://www.tutori
 
 *Phew!* If you've made it this far, congratulations! You're ready to move on to subqueries.
 
-Extra Credit (pt. 1)
-========================
+### Part 8: Subqueries
 
-Subqueries
-================================
 In a [subquery](http://www.postgresql.org/docs/8.1/static/functions-subquery.html), you have a select statement embedded in another select statement.
 
 1. Write a query to get meals that are above the average meal price.
@@ -268,8 +265,10 @@ In a [subquery](http://www.postgresql.org/docs/8.1/static/functions-subquery.htm
     (4 rows)
     ```
 
-Extra Credit (pt. 2)
-========================
+## Extra Credit
+
+### Part 9: More practice
+
 1. Answer the question, _"What user from each campaign bought the most items?"_
 
     It will be helpful to create a temporary table that contains the counts of the number of items each user bought. You can create a table like this: `CREATE TABLE mytable AS SELECT...`
