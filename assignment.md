@@ -1,4 +1,4 @@
-# SQL
+# Introduction to SQL
 
 ## Introduction
 #### Goals
@@ -36,30 +36,55 @@ In this repo, there's a SQL dump of the data we'll be using today. This data is 
 
     You should see a bunch of SQL commands flow through the terminal. 
 
-1. To enter the interactive Postgres prompt, now enter the following to be connected or your database.
+1. To enter the interactive Postgres command-line client and connect to your database, enter the following from the bash shell in the docker container.
 
     ```
     psql -U postgres readychef
     ```
+This will put you in the command-line client. We won't use that for this assignment, but you can type
 
-Now we are in a command line client. This is how we will explore the database to gain an understanding of what data we are playing with.
+    ```sql
+    SELECT * FROM users LIMIT 10; 
+    ```
+
+to see the first rows of the users table and verify the database was set up correctly (don't forget the semicolon!). We can do
+    ```
+    \d
+    ```
+in the command-line client to list all the tables in the database, and look at details of the user table with
+    ```
+    \d users
+    ```
+
+When you've looked at the details for each table, enter
+    ```
+    \q
+    ```
+
+to exit the command-line client.
 
 ### Part 2: Basic Exploration
 
+For this assignment we'll access the postgres database from python using a jupyter notebook.
 
-First, we will want to see what the available tables are. Remember, now that we are in the database, all of our commands or actions will be on the `readychef` database.
+1. Import `psycopg2` and create a connection to the database with
 
-1. What are the tables in our database? Run `\d` to find out.
+    ```python
+    conn = psycopg2.connect(dbname='postgres',
+                        host='localhost',
+                        user='postgres',
+                        password='password')
+    ```
+2. Create a cursor from the connection and execute a query to select the first 10 rows from the event table. Use a `for` loop to iterate over the cursor, printing out each row.
 
-2. What columns does each table have? Run `\d tablename` to find out.
-
+3. Write a that takes a query string and database connection, executes the query, and returns a list of rows. Call the function on a statement selecting the first 10 rows of the users table.
 
 ### Part 3: Select statements
 
 1. To get an understanding of the data, run a [SELECT](http://www.postgresqltutorial.com/postgresql-select/) statement on each table. Keep all the columns and limit the number of rows to 10.
         ```
         SELECT *
-        FROM EVENTS
+        FROM events
         LIMIT 10;
         ```
 
