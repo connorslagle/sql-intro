@@ -56,12 +56,12 @@ in the command-line client to list all the tables in the database, and look at d
     \d users
     ```
 
-When you've looked at the details for each table, enter
+When you've looked at the details for each table, you can enter
     ```
     \q
     ```
 
-to exit the command-line client.
+to exit the command-line client, but you might keep this open to refer to it again.
 
 ### Part 2: Basic Exploration
 
@@ -70,27 +70,24 @@ For this assignment we'll access the postgres database from python using a jupyt
 1. Import `psycopg2` and create a connection to the database with
 
     ```python
-    conn = psycopg2.connect(dbname='postgres',
+    conn = psycopg2.connect(dbname='readychef',
                         host='localhost',
                         user='postgres',
                         password='password')
     ```
 2. Create a cursor from the connection and execute a query to select the first 10 rows from the event table. Use a `for` loop to iterate over the cursor, printing out each row.
 
-3. Write a that takes a query string and database connection, executes the query, and returns a list of rows. Call the function on a statement selecting the first 10 rows of the users table.
+3. Write a function that takes a query string and database connection, executes the query, and returns a list of rows. Call the function on a statement selecting the first 10 rows of the users table. Is it better for a function to return a list of rows or the cursor itself?
+
+4. Use the `read_sql` function in `pandas` to load the same query into a dataframe. For the remainng questions, you can use either approach. 
 
 ### Part 3: Select statements
 
 1. To get an understanding of the data, run a [SELECT](http://www.postgresqltutorial.com/postgresql-select/) statement on each table. Keep all the columns and limit the number of rows to 10.
-        ```
-        SELECT *
-        FROM events
-        LIMIT 10;
-        ```
 
-2. Write a `SELECT` statement that would get just the userids.
+2. Write a `SELECT` statement that would get just the userids from the events table.
 
-3. Maybe you're just interested in what the campaign ids are. Use 'SELECT DISTINCT' to figure out all the possible values of that column.
+3. Maybe you're just interested in what the campaign ids are. Use 'SELECT DISTINCT' to figure out all the possible values of that column in the appropriate table.
 
     *Note:*  Pinterest=PI, Facebook=FB, Twitter=TW, and Reddit=RE
 
@@ -107,14 +104,13 @@ Now that we have the lay of the land, we're interested in the subset of users th
     Your output should be something like this:
 
     ```
-     userid |     dt
-    --------+------------
-          3 | 2013-01-01
-          4 | 2013-01-01
-          5 | 2013-01-01
-          6 | 2013-01-01
-          8 | 2013-01-01
-    ...
+userid	dt
+0	3	2013-01-01
+1	4	2013-01-01
+2	5	2013-01-01
+3	6	2013-01-01
+4	8	2013-01-01
+...
     ```
 
 ### Part 5: Aggregation Functions
@@ -130,10 +126,9 @@ SELECT COUNT(*) FROM users;
 Your output should look something like:
 
 ```
- count
--------
-  5524
-(1 row)
+    count
+0	5524
+
 ```
 
 1. Write a query to get the count of just the users who came from Facebook.
@@ -149,10 +144,8 @@ Your output should look something like:
 5. Calculate the mean price for a meal (from the `meals` table). You can use the `AVG` function. Your result should look like this:
 
     ```
-             avg
-    ---------------------
-     10.6522829904666332
-    (1 row)
+	avg
+0	10.652283
     ```
 
 6. Now get the average price, the min price and the max price for each meal type. Don't forget the group by statement!
@@ -160,23 +153,20 @@ Your output should look something like:
     Your output should look like this:
 
     ```
-        type    |         avg         | min | max
-    ------------+---------------------+-----+-----
-     mexican    |  9.6975945017182131 |   6 |  13
-     french     | 11.5420000000000000 |   7 |  16
-     japanese   |  9.3804878048780488 |   6 |  13
-     italian    | 11.2926136363636364 |   7 |  16
-     chinese    |  9.5187165775401070 |   6 |  13
-     vietnamese |  9.2830188679245283 |   6 |  13
-    (6 rows)
+	type	avg	min	max
+0	mexican	9.697595	6	13
+1	italian	11.292614	7	16
+2	chinese	9.518717	6	13
+3	french	11.542000	7	16
+4	japanese	9.380488	6	13
+5	vietnamese	9.283019	6	13
     ```
 
 7. It's often helpful for us to give our own names to columns. We can always rename columns that we select by doing `AVG(price) AS avg_price`. This is called [aliasing](http://stackoverflow.com/questions/15413735/postgresql-help-me-figure-out-how-to-use-table-aliases). Alias all the above columns so that your table looks like this:
 
     ```
-        type    |      avg_price      | min_price | max_price
-    ------------+---------------------+-----------+-----------
-     mexican    |  9.6975945017182131 |         6 |        13
+type	avg_price	min_price	max_price
+0	mexican	9.697595	6	13
     ...
     ```
 
@@ -187,14 +177,13 @@ Your output should look something like:
     It'll be helpful to *alias* the month column and give it a name like `month` so you don't have to call the `date_time` function again in the `GROUP BY` clause.
 
     Your result should look like this:
-
-    ```
-        type    | month |      avg_price      | min_price | max_price
-    ------------+-------+---------------------+-----------+-----------
-     italian    |     2 | 11.2666666666666667 |         7 |        16
-     chinese    |     1 | 11.2307692307692308 |         8 |        13
-    ...
-    ```
+```
+       type	month	avg_price	min_price	max_price
+0	chinese	1.0	11.230769	8	13
+1	chinese	2.0	9.066667	6	13
+2	chinese	3.0	9.250000	6	13
+3	french	1.0	11.650000	7	16
+```
 
 10. From the `events` table, write a query that gets the total number of buys, likes and shares for each meal id. 
 _Extra_: To avoid having to do this as three separate queries you can do the count of the number of buys like this: `SUM(CASE WHEN event='bought' THEN 1 ELSE 0 END)`.
@@ -217,33 +206,30 @@ _Extra_: To avoid having to do this as three separate queries you can do the cou
 
 Now we are ready to do operations on multiple tables. A [JOIN](http://www.tutorialspoint.com/postgresql/postgresql_using_joins.htm) allows us to combine multiple tables.
 
-1. Write a query to get one table that joins the `events` table with the `users` table (on `userid`) to create the following table.
+1. Write a query to get one table that joins the `events` table with the `users` table (on `userid`) to create the following result.
 
     ```
-     userid | campaign_id | meal_id | event
-    --------+-------------+---------+--------
-          3 | FB          |      18 | bought
-          7 | PI          |       1 | like
-         10 | TW          |      29 | bought
-         11 | RE          |      19 | share
-         15 | RE          |      33 | like
+	userid	campaign_id	meal_id	event
+0	3	FB	18	bought
+1	7	PI	1	like
+2	10	TW	29	bought
+3	11	RE	19	share
     ...
     ```
 
 2. Also include information about the meal, like the `type` and the `price`. Only include the `bought` events. The result should look like this:
 
     ```
-     userid | campaign_id | meal_id |    type    | price
-    --------+-------------+---------+------------+-------
-          3 | FB          |      18 | french     |     9
-         10 | TW          |      29 | italian    |    15
-         18 | TW          |      40 | japanese   |    13
-         22 | RE          |      23 | mexican    |    12
-         25 | FB          |       8 | french     |    14
+  	userid	campaign_id	meal_id	type	price
+0	3	FB	18	french	9
+1	10	TW	29	italian	15
+2	18	TW	40	japanese	13
+3	22	RE	23	mexican	12
+4	25	FB	8	french	
     ...
     ```
 
-    If your results are different, make sure you filtered it so you only got the `bought` events. You should be able to do this *without* using a where clause, only on clause(s)!
+    If your results are different, make sure you filtered it so you only got the `bought` events. You should be able to do this *without* using a where clause, only on clause(s)! (note this has no effect on performance, and may make the query more confusing)
 
 3. Write a query to get how many of each type of meal were bought.
 
