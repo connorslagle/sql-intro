@@ -20,7 +20,7 @@ In this repo, there's a SQL dump of the data we'll be using today. This data is 
 
 1. If you are on your personal computer and haven't set up postgres yet, follow [these instructions](https://github.com/GalvanizeDataScience/docker/blob/master/reference/docker_postgres.md) to start a docker container.
 
-1. **From a Docker bash shell** run `psql -U postgres` and then this command to create the database. See [here for more details on loading the data](https://github.com/GalvanizeDataScience/docker/blob/master/guides/docker_postgres.md)
+1. **From a Docker bash shell** run `psql -U postgres` and then this command to create the database. See [here for more details on loading the data](https://github.com/GalvanizeDataScience/docker/blob/master/reference/docker_postgres.md#loading-data-into-the-server-from-a-local-file)
 
     ```sql
     CREATE DATABASE readychef;
